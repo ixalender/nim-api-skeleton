@@ -11,8 +11,6 @@ import auth
 import user
 import response
 
-const contentTypeJson: string = "application/json"
-
 routes:
     post "/auth/@userId":
         let authInfo: AuthInfo = authUser @"userId"
@@ -20,7 +18,7 @@ routes:
         resp Http200, $ %* response.AuthResponse(
             token: authInfo.token,
             message: authInfo.info
-            ), contentTypeJson
+            ), CONTENT_TYPE_JSON
     
     get "/users/@userId":
         withAccess(@"userId", request):
@@ -36,6 +34,6 @@ routes:
                 name: userInfo.name,
                 age: userInfo.age,
                 email: userInfo.email
-                ), contentTypeJson
+                ), CONTENT_TYPE_JSON
 
 runForever()

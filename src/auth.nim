@@ -3,6 +3,10 @@ import jester
 import httpcore
 import libjwt
 
+import response
+
+const AUTH_HEADER = "authorization"
+
 type ForbiddenErrorI* = object of CatchableError
 
 type AuthInfo* = ref object of RootObj
@@ -28,18 +32,18 @@ proc authUser*(usrName: string): AuthInfo =
     )
 
 proc checkAuth*(userId: string, params: HttpHeaders): bool =
-    if "auth" notin params.table:
+    if AUTH_HEADER notin params.table:
         return false
 
-    let token = params["auth"]
+    let token = params[AUTH_HEADER]
     token != "" and userId != ""
 
 template withAccess*(userId: string, request: Request, actions: typed): void =
     if not checkAuth(userId, request.headers):
-        halt(Http401,
+        resp Http401,
             $ %* ErrorResponse(
-            error: "user.forbidden",
-            message: "Unauthorized request."
-            ))
+                error: "user.forbidden",
+                message: "Unauthorized request."
+            ), CONTENT_TYPE_JSON
 
     actions

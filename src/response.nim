@@ -2,6 +2,8 @@ import json
 import jester
 import httpcore
 
+const CONTENT_TYPE_JSON*: string = "application/json"
+
 type Response* = ref object of RootObj
     message*:    string
 
