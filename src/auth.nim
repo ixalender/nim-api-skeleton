@@ -1,6 +1,7 @@
 import random
 import jester
 import httpcore
+import libjwt
 
 type ForbiddenErrorI* = object of CatchableError
 
@@ -9,9 +10,20 @@ type AuthInfo* = ref object of RootObj
     info*:   string
 
 proc authUser*(usrName: string): AuthInfo =
-    var r = initRand(1000)
+    var jwt_obj: ptr jwt_t
+    discard jwt_new(addr jwt_obj)
+    
+    discard jwt_set_alg(
+        jwt_obj,
+        JWT_ALG_HS256,
+        cast[cstring](usrName),
+        cast[cint](256))
+
+    let token: string = $jwt_encode_str(jwt_obj)
+    jwt_free(jwt_obj)
+
     return AuthInfo(
-        token: $r.next(),
+        token: token,
         info: "Token has been generated."
     )
 
