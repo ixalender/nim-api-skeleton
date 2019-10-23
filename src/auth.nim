@@ -2,10 +2,12 @@ import random
 import jester
 import httpcore
 import libjwt
+import strutils
 
 import response
 
 const AUTH_HEADER = "authorization"
+const AUTH_TYPE = "Bearer"
 
 type ForbiddenErrorI* = object of CatchableError
 
@@ -31,11 +33,17 @@ proc authUser*(usrName: string): AuthInfo =
         info: "Token has been generated."
     )
 
-proc checkAuth*(userId: string, params: HttpHeaders): bool =
-    if AUTH_HEADER notin params.table:
-        return false
+proc parse_token(headerValue: string): string =
+    let findStr = AUTH_TYPE & " "
+    let startIdx = find(headerValue, findStr)
+    substr(headerValue, findStr.len() + startIdx)
 
-    let token = params[AUTH_HEADER]
+proc checkAuth*(userId: string, headers: HttpHeaders): bool =
+    if AUTH_HEADER notin headers.table:
+        return false
+    
+    let token = parse_token(headers[AUTH_HEADER])
+    # TODO: check tocken"
     token != "" and userId != ""
 
 template withAccess*(userId: string, request: Request, actions: typed): void =
