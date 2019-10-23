@@ -1,19 +1,17 @@
-import random
 import jester
 import httpcore
 import libjwt
 import strutils
 
-import response
-
 const AUTH_HEADER = "authorization"
 const AUTH_TYPE = "Bearer"
 
-type ForbiddenErrorI* = object of CatchableError
+type
+    ForbiddenErrorI* = object of CatchableError
 
-type AuthInfo* = ref object of RootObj
-    token*:  string
-    info*:   string
+    AuthInfo* = ref object of RootObj
+        token*:  string
+        info*:   string
 
 proc authUser*(usrName: string): AuthInfo =
     var jwt_obj: ptr jwt_t
@@ -35,8 +33,8 @@ proc authUser*(usrName: string): AuthInfo =
 
 proc parse_token(headerValue: string): string =
     let findStr = AUTH_TYPE & " "
-    let startIdx = find(headerValue, findStr)
-    substr(headerValue, findStr.len() + startIdx)
+    let startIdx = headerValue.find(findStr)
+    headerValue.substr(findStr.len() + startIdx)
 
 proc checkAuth*(userId: string, headers: HttpHeaders): bool =
     if AUTH_HEADER notin headers.table:
