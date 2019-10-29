@@ -15,7 +15,7 @@ type
     ErrorResponse* = ref object of Response
         error*: string
 
-    UserResponse* = object
+    UserResponse = object
         age*: int
         name*: string
         email*: string

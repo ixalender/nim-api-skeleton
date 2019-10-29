@@ -28,12 +28,9 @@ proc authUser*(userId: string): AuthInfo =
     let token: string = $jwt_encode_str(jwt_obj)
     jwt_free(jwt_obj)
 
-    let res = database.saveData(token, userId)
+    discard database.saveData(token, userId)
 
-    return AuthInfo(
-        token: token,
-        info: "Token has been generated."
-    )
+    return AuthInfo(token: token, info: "Token has been generated.")
 
 proc parse_token(headerValue: string): string =
     let findStr = AUTH_TYPE & " "
@@ -47,7 +44,7 @@ proc checkAuth*(userId: string, headers: HttpHeaders): bool =
     let token = parse_token(headers[AUTH_HEADER])
     let res = database.getData(token)
 
-    token != "" and userId == res
+    userId == res
 
 template withAccess*(userId: string, request: Request, actions: typed): void =
     if not checkAuth(userId, request.headers):
