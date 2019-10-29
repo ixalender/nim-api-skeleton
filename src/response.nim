@@ -1,6 +1,7 @@
 import json
 import jester
 import httpcore
+import user
 
 const CONTENT_TYPE_JSON*: string = "application/json"
 
@@ -19,6 +20,12 @@ type
         name*: string
         email*: string
 
+proc newUserResponse*(userInfo: UserInfo): UserResponse =
+    UserResponse(
+        name:   userInfo.name,
+        age:    userInfo.age,
+        email:  userInfo.email
+    )
 
 proc Ok*[T](response: T): string =
     return $ %* response
