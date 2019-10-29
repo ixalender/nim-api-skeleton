@@ -3,6 +3,8 @@ import httpcore
 import libjwt
 import strutils
 import database
+import logging
+import os
 
 const AUTH_HEADER = "authorization"
 const AUTH_TYPE = "Bearer"
@@ -28,7 +30,8 @@ proc authUser*(userId: string): AuthInfo =
     let token: string = $jwt_encode_str(jwt_obj)
     jwt_free(jwt_obj)
 
-    discard database.saveData(token, userId)
+    if not database.saveData(token, userId):
+        logging.error("Could not save user data: $1" % osErrorMsg(osLastError()))
 
     return AuthInfo(token: token, info: "Token has been generated.")
 
