@@ -5,5 +5,5 @@ sqlite3 apidatabase.db3 <<EOS
         name text
     );
 
-    INSERT INTO User(uid, name) VALUES("8A660FC9-1359-4DC3-8312-0693542980D8", "Test App")
+    INSERT INTO User(uid, name) VALUES("8A660FC9-1359-4DC3-8312-0693542980D8", "Test App");
 EOS

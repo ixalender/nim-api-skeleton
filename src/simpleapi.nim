@@ -16,9 +16,9 @@ routes:
         let authInfo: AuthInfo = authUser @"userId"
 
         if authInfo.empty:
-            resp Http403, $ %* ErrorResponse(
-                error: "user.forbidden",
-                message: "Permission denied."
+            resp Http404, $ %* ErrorResponse(
+                error: "user.not_found",
+                message: "User not found."
             ), CONTENT_TYPE_JSON
 
         resp Http200, $ %* response.AuthResponse(
@@ -38,5 +38,10 @@ routes:
                 )
 
             resp Http200, $ %* newUserResponse(userInfo), CONTENT_TYPE_JSON
+    error Http404:
+        resp Http404, $ %* ErrorResponse(
+            error: "not.found",
+            message: "Url not found."
+        ), CONTENT_TYPE_JSON
 
 runForever()
