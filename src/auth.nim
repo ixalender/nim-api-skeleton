@@ -6,31 +6,41 @@ import storage
 import logging
 import os
 
+import user
+import model
+import db.database
+import db.sqlitedatabase
+
 const AUTH_HEADER = "authorization"
 const AUTH_TYPE = "Bearer"
 
 type
     ForbiddenError* = object of CatchableError
 
-    AuthInfo* = ref object of RootObj
-        token*:  string
-        info*:   string
+    AuthInfo* = ref object of BaseModel
+        token*:     string
+        info*:      string
 
 proc authUser*(userId: string): AuthInfo =
     var jwt_obj: ptr jwt_t
     discard jwt_new(addr jwt_obj)
+
+    let dbcont: DataBaseContainer[SqliteDataBase] = newDataBase[SqliteDataBase]()
+    let user: UserInfo = dbcont.db.findUser(userId)
+    if user.empty:
+        return AuthInfo(empty: true)
     
     discard jwt_set_alg(
         jwt_obj,
         JWT_ALG_HS256,
-        cast[cstring](userId),
+        cast[cstring](user.uid),
         cast[cint](256)
     )
 
     let token: string = $jwt_encode_str(jwt_obj)
     jwt_free(jwt_obj)
 
-    if not storage.saveData(token, userId):
+    if not storage.saveData(token, user.uid):
         logging.error("Could not save user data: $1" % osErrorMsg(osLastError()))
 
     return AuthInfo(token: token, info: "Token has been generated.")
