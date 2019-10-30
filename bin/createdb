@@ -1,0 +1,9 @@
+sqlite3 apidatabase.db3 <<EOS
+    CREATE TABLE IF NOT EXISTS User(
+        id integer PRIMARY KEY,
+        uid text UNIQUE NOT NULL,
+        name text
+    );
+
+    INSERT INTO User(uid, name) VALUES("8A660FC9-1359-4DC3-8312-0693542980D8", "Test App")
+EOS

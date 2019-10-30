@@ -16,15 +16,13 @@ type
         error*: string
 
     UserResponse = object
-        age*: int
+        uid*: string
         name*: string
-        email*: string
 
 proc newUserResponse*(userInfo: UserInfo): UserResponse =
     UserResponse(
-        name:   userInfo.name,
-        age:    userInfo.age,
-        email:  userInfo.email
+        uid:    userInfo.uid,
+        name:   userInfo.name
     )
 
 proc Ok*[T](response: T): string =

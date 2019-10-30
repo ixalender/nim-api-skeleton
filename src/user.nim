@@ -2,17 +2,15 @@ type BaseObject* = ref object of RootObj
     empty*: bool
 
 type UserInfo* = ref object of BaseObject
-    age*: int
+    uid*: string
     name*: string
-    email*: string
 
 proc getUser*(userId: string): UserInfo =
     # TODO: read user from database
-    if userId == "Alex":
+    if userId == "unique-id":
         UserInfo(
-            name: "Alex",
-            age: 35,
-            email: "anekrasov@fastmail.com"
+            uid: "unique-id",
+            name: "Alex"
         )
     else:
         UserInfo(empty: true)

@@ -2,7 +2,7 @@ import jester
 import httpcore
 import libjwt
 import strutils
-import database
+import storage
 import logging
 import os
 
@@ -30,7 +30,7 @@ proc authUser*(userId: string): AuthInfo =
     let token: string = $jwt_encode_str(jwt_obj)
     jwt_free(jwt_obj)
 
-    if not database.saveData(token, userId):
+    if not storage.saveData(token, userId):
         logging.error("Could not save user data: $1" % osErrorMsg(osLastError()))
 
     return AuthInfo(token: token, info: "Token has been generated.")
@@ -45,7 +45,7 @@ proc checkAuth*(userId: string, headers: HttpHeaders): bool =
         return false
 
     let token = parse_token(headers[AUTH_HEADER])
-    let res = database.getData(token)
+    let res = storage.getData(token)
 
     userId == res
 

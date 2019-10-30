@@ -1,5 +1,4 @@
 import redis
-import asyncdispatch
 
 proc saveData*(token: string, data: string): bool =
     let client: Redis = redis.open()
@@ -12,4 +11,3 @@ proc saveData*(token: string, data: string): bool =
 proc getData*(token: string): RedisString =
     let client: Redis = redis.open()
     client.get("simpleapi:" & token)
-
