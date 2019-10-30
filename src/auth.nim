@@ -63,7 +63,7 @@ template withAccess*(userId: string, request: Request, actions: typed): void =
     if not checkAuth(userId, request.headers):
         resp Http401,
             $ %* ErrorResponse(
-                error: "user.forbidden",
+                error: "user.unauthorized",
                 message: "Unauthorized request."
             ), CONTENT_TYPE_JSON
 
