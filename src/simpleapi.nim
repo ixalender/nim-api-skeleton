@@ -8,10 +8,14 @@ import auth
 import user
 import response
 
-import db.database
-import db.sqlitedatabase
+import db/database
+import db/sqlitedatabase
+import views/index
 
 routes:
+    get "/":
+        resp renderMain(renderIndex())
+
     post "/auth/@userId":
         let authInfo: AuthInfo = authUser @"userId"
 
@@ -38,6 +42,7 @@ routes:
                 )
 
             resp Http200, $ %* newUserResponse(userInfo), CONTENT_TYPE_JSON
+
     error Http404:
         resp Http404, $ %* ErrorResponse(
             error: "not.found",
