@@ -33,8 +33,8 @@ proc authUser*(userId: string): AuthInfo =
     discard jwt_set_alg(
         jwt_obj,
         JWT_ALG_HS256,
-        cast[cstring](user.uid),
-        cast[cint](256)
+        cstring(user.uid),
+        cint(user.uid.len)
     )
 
     let token: string = $jwt_encode_str(jwt_obj)
@@ -57,7 +57,10 @@ proc checkAuth*(userId: string, headers: HttpHeaders): bool =
     let token = parse_token(headers[AUTH_HEADER])
     let res = storage.getData(token)
 
-    userId == res
+    var jwt_obj: ptr jwt_t
+    let ret = jwt_decode(addr jwt_obj, token, userId, cint(userId.len))
+
+    userId == res and ret == 0
 
 template withAccess*(userId: string, request: Request, actions: typed): void =
     if not checkAuth(userId, request.headers):

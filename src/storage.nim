@@ -1,9 +1,9 @@
 import redis
 
-proc saveData*(token: string, data: string): bool =
+proc saveData*(token: string, data: string, expireIn: int = 3600): bool =
     let client: Redis = redis.open()
     try:
-        client.setk("simpleapi:" & token, data)
+        discard client.setEx("simpleapi:" & token, expireIn, data)
     except Exception as ex:
         return false
     return true
