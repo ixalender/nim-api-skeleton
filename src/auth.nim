@@ -59,6 +59,7 @@ proc checkAuth*(userId: string, headers: HttpHeaders): bool =
 
     var jwt_obj: ptr jwt_t
     let ret = jwt_decode(addr jwt_obj, token, userId, cint(userId.len))
+    jwt_free(jwt_obj)
 
     userId == res and ret == 0
 

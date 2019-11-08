@@ -20,5 +20,5 @@
 #proc renderIndex*(): string =
 #  result = ""
 <h1>Simple API</h1>
-<h2> with Nim & Jester</h2>
+<h2>with Nim & Jester</h2>
 #end proc
