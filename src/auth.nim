@@ -8,8 +8,7 @@ import os
 
 import user
 import model
-import db.database
-import db.sqlitedatabase
+import db/sqlitedatabase
 
 const AUTH_HEADER = "authorization"
 const AUTH_TYPE = "Bearer"
@@ -21,12 +20,12 @@ type
         token*:     string
         info*:      string
 
-proc authUser*(userId: string): AuthInfo =
+proc authUser*(userId: string, userDB: SqliteDataBase): AuthInfo =
     var jwt_obj: ptr jwt_t
     discard jwt_new(addr jwt_obj)
-
-    let dbcont: DataBaseContainer[SqliteDataBase] = newDataBase[SqliteDataBase]()
-    let user: UserInfo = dbcont.db.findUser(userId)
+    echo(userDB.type)
+    # let dbcont: DataBaseContainer[SqliteDataBase] = newDataBase[SqliteDataBase]()
+    let user: UserInfo = userDB.findUser userId
     if user.empty:
         return AuthInfo(empty: true)
     

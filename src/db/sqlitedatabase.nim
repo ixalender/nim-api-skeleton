@@ -1,21 +1,21 @@
-import database
 import db_sqlite
 import ../user
 
 type
-    SqliteDataBase* = ref object of DataBaseProvider
-        db*: DbConn
+    SqliteDataBase* = ref object of RootObj
 
-proc openDB(): SqliteDataBase =
-    new result
-    result.db = open("apidatabase.db3", "", "", "")
+proc openDB(): DbConn =
+    open("apidatabase.db3", "", "", "")
     
-proc closeDB(database: SqliteDataBase) =
-    database.db.close()
+proc closeDB(database: DbConn) =
+    database.close()
+
+proc newDataBase*(): SqliteDataBase =
+        new(result)
 
 proc findUser*(sqlite: SqliteDataBase, uid: string): UserInfo =
     let database = openDB()
-    let row = database.db.getRow(
+    let row = database.getRow(
         sql"SELECT uid, name FROM User WHERE uid = ?;", uid
     )
     database.closeDB()
