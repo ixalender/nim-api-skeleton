@@ -11,7 +11,7 @@ proc closeDB(database: DbConn) =
     database.close()
 
 proc newDataBase*(): SqliteDataBase =
-        new(result)
+    new(result)
 
 proc findUser*(sqlite: SqliteDataBase, uid: string): UserInfo =
     let database = openDB()

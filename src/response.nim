@@ -10,7 +10,7 @@ type
         message*:    string
 
     AuthResponse* = ref object of Response
-        token*: string
+        jwt*: string
 
     ErrorResponse* = ref object of Response
         error*: string

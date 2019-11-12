@@ -4,7 +4,7 @@ import strtabs
 import strutils
 import json
 
-import auth
+import auth/auth
 import user
 import response
 
@@ -25,7 +25,7 @@ routes:
             ), CONTENT_TYPE_JSON
 
         resp Http200, $ %* response.AuthResponse(
-            token: authInfo.token,
+            jwt: authInfo.token,
             message: authInfo.info
         ), CONTENT_TYPE_JSON
     
