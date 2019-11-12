@@ -16,6 +16,9 @@ when defined(nimdistros):
     if detectOs(MacOSX):
         foreignDep "libjwt"
 
+task test, "Runs the test suite":
+  exec "nim c -r tests/**/*"
+
 requires "nim >= 1.0.0"
 requires "jester >= 0.4.3"
 requires "libjwt >= 0.1.0"

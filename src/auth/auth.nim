@@ -40,7 +40,10 @@ proc checkAuth*(userId: string, headers: HttpHeaders): bool =
     if jwtToken.len == 0:
         return false
 
-    let userSessionGrant: Grant = json.to(parseJson(storage.getJwtData(jwtToken)), Grant)
+    let storedJwt = storage.getJwtData(jwtToken)
+    if storedJwt.len == 0:
+        return false
+    let userSessionGrant: Grant = json.to(parseJson(storedJwt), Grant)
     if userSessionGrant.iss != userId:
         return false
 

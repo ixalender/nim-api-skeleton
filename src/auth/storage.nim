@@ -1,4 +1,5 @@
 import redis
+import strutils
 
 const keyPrefix = "simpleapijwt:"
 
@@ -12,4 +13,6 @@ proc saveJwtData*(token: string, data: string, expireIn: int = 3600): bool =
 
 proc getJwtData*(token: string): RedisString =
     let client: Redis = redis.open()
-    client.get(keyPrefix & token)
+    let data = client.get(keyPrefix & token)
+    result = if data == redisNil: ""
+                            else: data.strip()

@@ -3,18 +3,20 @@ import ../user
 
 type
     SqliteDataBase* = ref object of RootObj
+        dbFile*: string
 
-proc openDB(): DbConn =
-    open("apidatabase.db3", "", "", "")
+proc openDB(dbFile: string): DbConn =
+    open(dbFile, "", "", "")
     
 proc closeDB(database: DbConn) =
     database.close()
 
-proc newDataBase*(): SqliteDataBase =
+proc newDataBase*(dbFile: string = "apidatabase.db3"): SqliteDataBase =
     new(result)
+    result.dbFile = dbFile
 
-proc findUser*(sqlite: SqliteDataBase, uid: string): UserInfo =
-    let database = openDB()
+proc findUser*(db: SqliteDataBase, uid: string): UserInfo =
+    let database = openDB(db.dbFile)
     let row = database.getRow(
         sql"SELECT uid, name FROM User WHERE uid = ?;", uid
     )
