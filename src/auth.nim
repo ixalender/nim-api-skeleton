@@ -5,6 +5,8 @@ import strutils
 import storage
 import logging
 import os
+import json
+import times
 
 import user
 import model
@@ -19,6 +21,11 @@ type
     AuthInfo* = ref object of BaseModel
         token*:     string
         info*:      string
+    
+    Grant* = ref object of RootObj
+        iss*:   string
+        exp*:   string
+        admin*: bool
 
 proc authUser*(userId: string, userDB: SqliteDataBase): AuthInfo =
     var jwt_obj: ptr jwt_t
@@ -32,9 +39,18 @@ proc authUser*(userId: string, userDB: SqliteDataBase): AuthInfo =
     discard jwt_set_alg(
         jwt_obj,
         JWT_ALG_HS256,
-        cstring(user.uid),
+        cstring(user.uid), # TODO: use secret key
         cint(user.uid.len)
     )
+
+    let exp: Time = times.getTime() + initDuration(seconds = 3600)
+    let grant = $ %* Grant(
+        iss: userId,
+        exp: $exp.toUnix,
+        admin: false
+    )
+    # TODO: check grantResult and throw error
+    let grantResult = jwt_add_grants_json(jwt_obj, cstring(grant))
 
     let token: string = $jwt_encode_str(jwt_obj)
     jwt_free(jwt_obj)
@@ -52,7 +68,7 @@ proc parse_token(headerValue: string): string =
 proc checkAuth*(userId: string, headers: HttpHeaders): bool =
     if AUTH_HEADER notin headers.table:
         return false
-
+    # TODO: check grant/payload
     let token = parse_token(headers[AUTH_HEADER])
     let res = storage.getData(token)
 
