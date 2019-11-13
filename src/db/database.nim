@@ -5,4 +5,4 @@ type
         dbFile*: string
 
 proc findUser*(db: var Database, userId: string): UserInfo =
-    discard
+    UserInfo(empty: true)
