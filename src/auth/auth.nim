@@ -11,6 +11,7 @@ import grant
 import storage
 import ../user
 import ../model
+import ../db/database
 import ../db/sqlitedatabase
 
 type
@@ -20,8 +21,8 @@ type
         token*:     string
         info*:      string
 
-proc authUser*(userId: string, userDB: SqliteDataBase): AuthInfo =
-    let user: UserInfo = userDB.findUser userId
+proc authUser*(userId: string, userDB: Database): AuthInfo =
+    let user: UserInfo = userDB.findUser(userId)
     if user.empty:
         return AuthInfo(empty: true)
     # TODO: remove old tokens

@@ -8,6 +8,7 @@ import auth/auth
 import user
 import response
 
+import db/database
 import db/sqlitedatabase
 import views/index
 
@@ -16,7 +17,7 @@ routes:
         resp renderMain(renderIndex())
 
     post "/auth/@userId":
-        let authInfo: AuthInfo = auth.authUser(@"userId", newDataBase())
+        let authInfo: AuthInfo = auth.authUser(@"userId", newSqliteDataBase())
 
         if authInfo.empty:
             resp Http404, $ %* ErrorResponse(
@@ -31,8 +32,8 @@ routes:
     
     get "/users/@userId":
         withAccess(@"userId", request):
-            let dbcont: SqliteDataBase = newDataBase()
-            let userInfo: UserInfo = dbcont.findUser @"userId"
+            let db: Database = newSqliteDataBase()
+            let userInfo: UserInfo = db.findUser(@"userId")
 
             if userInfo.empty:
                 halt Http404, $ %* ErrorResponse(

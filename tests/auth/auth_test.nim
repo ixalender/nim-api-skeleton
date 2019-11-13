@@ -4,11 +4,12 @@ import auth/auth
 import db/sqlitedatabase
 
 when isMainModule:
-    let authInfo: AuthInfo = auth.authUser("userId", newDataBase())
+    let authInfo: AuthInfo = auth.authUser("userId", newSqliteDataBase())
     doAssert(authInfo.empty == true)
     
-    let headers: HttpHeaders = new httpcore.HttpHeaders
-    headers.table = new TableRef["", @[""]]
+    let headers: HttpHeaders = httpcore.HttpHeaders(
+        table: TableRef["", @[""]]()
+    )
     let checkResult = auth.checkAuth("userId", headers)
     doAssert(checkResult == false)
     
