@@ -17,7 +17,7 @@ when defined(nimdistros):
         foreignDep "libjwt"
 
 task test, "Runs the test suite":
-  exec "nim c -r tests/**/*"
+  exec "nim c -r tests/auth_test"
 
 requires "nim >= 1.0.0"
 requires "jester >= 0.4.3"
