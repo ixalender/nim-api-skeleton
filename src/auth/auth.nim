@@ -27,14 +27,13 @@ proc authUser*(userId: string, userDB: Database): AuthInfo =
         return AuthInfo(empty: true)
     # TODO: remove old tokens
     let grant = $ %* newGrant(user.uid)
-    let token: string = jwt.generateJWT(user.uid, user.uid, grant) # TODO: use secret key
-    if token.len == 0:
+    let token: JwtToken = jwt.generateJWT(user.uid, user.uid, grant) # TODO: use secret key
+
+    if token.empty or not storage.saveJwtData(token.value, grant):
+        logging.error("Could not save user data: $1" % osErrorMsg(osLastError()))
         return AuthInfo(empty: true)
 
-    if not storage.saveJwtData(token, grant):
-        logging.error("Could not save user data: $1" % osErrorMsg(osLastError()))
-
-    return AuthInfo(token: token, info: "User has been authenticated.")
+    return AuthInfo(token: token.value, info: "User has been authenticated.")
 
 proc checkAuth*(userId: string, headers: HttpHeaders): bool =
     let jwtToken = jwt.getJwt(headers)

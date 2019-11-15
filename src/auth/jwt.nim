@@ -3,11 +3,15 @@ import libjwt
 import httpcore
 import strutils
 import json
+import ../model
 
 const AUTH_HEADER = "authorization"
 const AUTH_TYPE = "Bearer"
 
-proc generateJWT*(userId: string, secretKey: string, payload: string): string =
+type JwtToken* = ref object of BaseModel
+    value*: string
+
+proc generateJWT*(userId: string, secretKey: string, payload: string): JwtToken =
     var jwt_obj: ptr jwt_t
     discard jwt_new(addr jwt_obj)
 
@@ -19,12 +23,12 @@ proc generateJWT*(userId: string, secretKey: string, payload: string): string =
     )
 
     if jwt_add_grants_json(jwt_obj, cstring(payload)) > 0:
-        return ""
+        return JwtToken(empty: true)
 
     let token: string = $jwt_encode_str(jwt_obj)
     jwt_free(jwt_obj)
 
-    token
+    JwtToken(value: token)
 
 proc getJwt*(headers: HttpHeaders): string =
     if not contains(headers.table, AUTH_HEADER):
