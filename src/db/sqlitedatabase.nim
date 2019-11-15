@@ -11,7 +11,7 @@ proc openDB(dbFile: string): DbConn =
 proc closeDB(database: DbConn) =
     database.close()
 
-proc findUser*(db: Database, uid: string): UserInfo =
+method findUser*(db: SqliteDataBase, uid: string): UserInfo =
     let database = openDB(db.dbFile)
     let row = database.getRow(
         sql"SELECT uid, name FROM User WHERE uid = ?;", uid

@@ -17,7 +17,8 @@ routes:
         resp renderMain(renderIndex())
 
     post "/auth/@userId":
-        let authInfo: AuthInfo = auth.authUser(@"userId", newSqliteDataBase())
+        let db: Database = newSqliteDataBase()
+        let authInfo: AuthInfo = auth.authUser(@"userId", db)
 
         if authInfo.empty:
             resp Http404, $ %* ErrorResponse(

@@ -4,5 +4,5 @@ type
     Database* = ref object of RootObj
         dbFile*: string
 
-proc findUser*(db: var Database, userId: string): UserInfo =
+method findUser*(db: Database, userId: string): UserInfo {.base.} =
     discard

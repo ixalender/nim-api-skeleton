@@ -42,7 +42,6 @@ proc getJwt*(headers: HttpHeaders): string =
 proc parseJwtPayload*(jwtToken: string, secretKey: string): JsonNode =
     var jwt_obj: ptr jwt_t
     if jwt_decode(addr jwt_obj, jwtToken, secretKey, cint(secretKey.len)) > 0:
-        new result
-        result.kind = JNull
+        return JsonNode(kind: JNull)
     
     result = parseJson($json_dumps(jwt_obj.grants, 0))

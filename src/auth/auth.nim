@@ -12,7 +12,6 @@ import storage
 import ../user
 import ../model
 import ../db/database
-import ../db/sqlitedatabase
 
 type
     ForbiddenError* = object of CatchableError
