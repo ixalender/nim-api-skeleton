@@ -20,7 +20,7 @@ type
         user*:      UserInfo
         info*:      string
 
-var secret: string
+var secret {.threadvar.}: string
     
 proc jwtSecret*(): string =
     secret
