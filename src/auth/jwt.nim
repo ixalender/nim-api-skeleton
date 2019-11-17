@@ -18,7 +18,7 @@ proc generateJWT*(userId: string, secretKey: string, payload: string): JwtToken 
     discard jwt_set_alg(
         jwt_obj,
         JWT_ALG_HS256,
-        cstring(secretKey), # TODO: use secret key
+        cstring(secretKey),
         cint(secretKey.len)
     )
 
