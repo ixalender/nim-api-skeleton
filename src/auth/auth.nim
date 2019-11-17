@@ -8,7 +8,6 @@ import times
 
 import jwt
 import grant
-import storage
 import ../user
 import ../model
 import ../db/database
@@ -18,49 +17,46 @@ type
 
     AuthInfo* = ref object of BaseModel
         token*:     string
+        user*:      UserInfo
         info*:      string
+
+var secret: string
+    
+proc jwtSecret*(): string =
+    secret
+    
+proc jwtSecret*(newSecret: string) =
+    secret = newSecret
 
 proc authUser*(userId: string, userDB: Database): AuthInfo =
     let user: UserInfo = userDB.findUser(userId)
     if user.empty:
         return AuthInfo(empty: true)
-    # TODO: remove old tokens
-    let grant = $ %* newGrant(user.uid)
-    let token: JwtToken = jwt.generateJWT(user.uid, getEnv("JWT_SECRET"), grant)
 
-    if token.empty or not storage.saveJwtData(token.value, grant):
+    let grant = $ %* newGrant(user.uid)
+    let token: JwtToken = jwt.generateJWT(user.uid, jwtSecret(), grant)
+
+    if token.empty:
         logging.error("Could not save user data: $1" % osErrorMsg(osLastError()))
         return AuthInfo(empty: true)
 
-    return AuthInfo(token: token.value, info: "User has been authenticated.")
+    return AuthInfo(token: token.value, user: user, info: "User has been authenticated.")
 
-proc checkAuth*(userId: string, headers: HttpHeaders): bool =
-    let jwtToken = jwt.getJwt(headers)
+proc checkAuth*(request: Request, userDB: Database): UserInfo =
+    let jwtToken = jwt.getJwt(request.headers)
     if jwtToken.len == 0:
-        return false
+        return UserInfo(empty: true)
 
-    let storedJwt = storage.getJwtData(jwtToken)
-    if storedJwt.len == 0:
-        return false
-    let userSessionGrant: Grant = json.to(parseJson(storedJwt), Grant)
-    if userSessionGrant.iss != userId:
-        return false
-
-    let jwtGrants = jwt.parseJwtPayload(jwtToken, getEnv("JWT_SECRET"))
+    let jwtGrants = jwt.parseJwtPayload(jwtToken, jwtSecret())
     if jwtGrants.kind == JNull:
-        return false
-
+        return UserInfo(empty: true)
+    
     let grant: Grant = json.to(jwtGrants, Grant)
+    let userInfo: UserInfo = userDB.findUser(grant.iss)
 
-    times.fromUnix(parseInt grant.exp) > times.getTime() and
-    grant.iss == userId
+    result =
+        if times.fromUnix(parseInt grant.exp) > times.getTime():
+            userInfo
+        else:
+            UserInfo(empty: true)
 
-template withAccess*(userId: string, request: Request, actions: typed): void =
-    if not checkAuth(userId, request.headers):
-        resp Http401,
-            $ %* ErrorResponse(
-                error: "user.unauthorized",
-                message: "Unauthorized request."
-            ), CONTENT_TYPE_JSON
-
-    actions
