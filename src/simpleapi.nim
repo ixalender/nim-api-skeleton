@@ -8,6 +8,7 @@ import json
 import auth/auth
 import user
 import response
+import request
 
 import db/database
 import db/sqlitedatabase
@@ -36,7 +37,8 @@ routes:
     
     get "/user":
         let db: Database = newSqliteDataBase()
-        let userInfo: UserInfo = checkAuth(request, db)
+        let req = newApiRequest(request.headers)
+        let userInfo: UserInfo = checkAuth(req, db)
 
         if userInfo.empty:
             resp Http401,

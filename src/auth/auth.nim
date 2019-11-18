@@ -10,6 +10,7 @@ import jwt
 import grant
 import ../user
 import ../model
+import ../request
 import ../db/database
 
 type
@@ -42,8 +43,8 @@ proc authUser*(userId: string, userDB: Database): AuthInfo =
 
     return AuthInfo(token: token.value, user: user, info: "User has been authenticated.")
 
-proc checkAuth*(request: Request, userDB: Database): UserInfo =
-    let jwtToken = jwt.getJwt(request.headers)
+proc checkAuth*(req: request.ApiRequest, userDB: Database): UserInfo =
+    let jwtToken = jwt.getJwt(req.headers())
     if jwtToken.len == 0:
         return UserInfo(empty: true)
 
