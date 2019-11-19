@@ -29,8 +29,8 @@ proc jwtSecret*(): string =
 proc jwtSecret*(newSecret: string) =
     secret = newSecret
 
-proc authUser*(userId: string, userDB: Database): AuthInfo =
-    let user: UserInfo = userDB.findUser(userId)
+proc authUser*(userId: string): AuthInfo =
+    let user: UserInfo = database.instance().findUser(userId)
     if user.empty:
         return AuthInfo(empty: true)
 
@@ -43,7 +43,7 @@ proc authUser*(userId: string, userDB: Database): AuthInfo =
 
     return AuthInfo(token: token.value, user: user, info: "User has been authenticated.")
 
-proc checkAuth*(req: request.ApiRequest, userDB: Database): UserInfo =
+proc checkAuth*(req: request.ApiRequest): UserInfo =
     let jwtToken = jwt.getJwt(req.headers())
     if jwtToken.len == 0:
         return UserInfo(empty: true)
@@ -53,7 +53,7 @@ proc checkAuth*(req: request.ApiRequest, userDB: Database): UserInfo =
         return UserInfo(empty: true)
     
     let grant: Grant = json.to(jwtGrants, Grant)
-    let userInfo: UserInfo = userDB.findUser(grant.iss)
+    let userInfo: UserInfo = database.instance().findUser(grant.iss)
 
     result =
         if times.fromUnix(parseInt grant.exp) > times.getTime():

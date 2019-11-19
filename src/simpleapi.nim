@@ -14,15 +14,15 @@ import db/database
 import db/sqlitedatabase
 import views/index
 
-auth.jwtSecret(getEnv("JWT_SECRET"))
+auth.jwtSecret getEnv("JWT_SECRET")
+database.init newSqliteDataBase()
 
 routes:
     get "/":
         resp renderMain(renderIndex())
 
     post "/auth/@userId":
-        let db: Database = newSqliteDataBase()
-        let authInfo: AuthInfo = auth.authUser(@"userId", db)
+        let authInfo: AuthInfo = auth.authUser @"userId"
 
         if authInfo.empty:
             resp Http404, $ %* ErrorResponse(
@@ -36,9 +36,8 @@ routes:
         ), CONTENT_TYPE_JSON
     
     get "/user":
-        let db: Database = newSqliteDataBase()
         let req = newApiRequest(request.headers)
-        let userInfo: UserInfo = checkAuth(req, db)
+        let userInfo: UserInfo = checkAuth req
 
         if userInfo.empty:
             resp Http401,
@@ -47,7 +46,7 @@ routes:
                     message: "Unauthorized request."
                 ), CONTENT_TYPE_JSON
 
-        resp Http200, $ %* newUserResponse(userInfo), CONTENT_TYPE_JSON
+        resp Http200, $ %* newUserResponse userInfo, CONTENT_TYPE_JSON
 
     error Http404:
         resp Http404, $ %* ErrorResponse(
