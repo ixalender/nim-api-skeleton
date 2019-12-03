@@ -10,6 +10,8 @@ import
 
 type RequestMock = ref object of RootObj
 
+database.init newSqliteDataBase()
+
 method headers*(req: RequestMock): HttpHeaders {.base.} =
     result = httpcore.HttpHeaders(
         table: TableRef["", @[""]]()
@@ -17,7 +19,7 @@ method headers*(req: RequestMock): HttpHeaders {.base.} =
 
 suite "auth test":
     test "authenticate non-existing user":
-        let authInfo: AuthInfo = auth.authUser("userId", newSqliteDataBase())
+        let authInfo: AuthInfo = auth.authUser "userId"
         check authInfo.empty == true
 
     test "check access of non-existing user":
@@ -25,6 +27,6 @@ suite "auth test":
             table: TableRef["", @[""]]()
         )
         let db: Database = newSqliteDataBase()
-        let checkResult: UserInfo = auth.checkAuth(request.newApiRequest(headers), db)
+        let checkResult: UserInfo = auth.checkAuth request.newApiRequest(headers)
         check checkResult.empty
 
