@@ -16,7 +16,7 @@ The application uses a simple SQLite database
 
 ## Build & Run
 
-`nimble run`
+`nimble run simpleapi`
 
 ## Tests
 
@@ -33,7 +33,7 @@ Example for VSCode `.vscode/tasks.json`
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build nad run project",
+            "label": "build and run project",
             "type": "shell",
             "command": "nimble",
             "args": ["run", "simpleapi"],
