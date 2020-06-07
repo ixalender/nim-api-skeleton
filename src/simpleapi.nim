@@ -54,4 +54,10 @@ routes:
             message: "Url not found."
         ), CONTENT_TYPE_JSON
 
+    error Exception:
+        resp Http500, $ %* ErrorResponse(
+            error: "internal.error",
+            message: "Internal service error."
+        ), CONTENT_TYPE_JSON
+
 runForever()

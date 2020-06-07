@@ -19,8 +19,8 @@ method headers*(req: RequestMock): HttpHeaders {.base.} =
 
 suite "auth test":
     test "authenticate non-existing user":
-        let authInfo: AuthInfo = auth.authUser "userId"
-        check authInfo.empty == true
+        expect DatabaseException:
+            let authInfo: AuthInfo = auth.authUser "userId"
 
     test "check access of non-existing user":
         let headers = httpcore.HttpHeaders(
