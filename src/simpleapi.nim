@@ -5,10 +5,12 @@ import strtabs
 import strutils
 import json
 
+import utils
 import auth/auth
 import user
 import response
 import request
+import exceptions
 
 import db/database
 import db/sqlitedatabase
@@ -25,10 +27,7 @@ routes:
         let authInfo: AuthInfo = auth.authUser @"userId"
 
         if authInfo.empty:
-            resp Http404, $ %* ErrorResponse(
-                error: "user.not_found",
-                message: "User not found."
-            ), CONTENT_TYPE_JSON
+            raise newException(NotFoundException, "user.not_found")
 
         resp Http200, $ %* response.AuthResponse(
             jwt: authInfo.token,
@@ -52,6 +51,12 @@ routes:
         resp Http404, $ %* ErrorResponse(
             error: "not.found",
             message: "Url not found."
+        ), CONTENT_TYPE_JSON
+    
+    error NotFoundException:
+        resp Http404, $ %* ErrorResponse(
+            error: jester_fix_error_msg(exception.msg),
+            message: "Data's not found."
         ), CONTENT_TYPE_JSON
 
     error Exception:

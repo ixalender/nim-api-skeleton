@@ -1,8 +1,8 @@
 # Package
 
 version       = "0.1.0"
-author        = "Александр Некрасов"
-description   = "Experimental API app with Nim"
+author        = "Alexander Nekrasov"
+description   = "Experimental API app with Nim and Jester"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["simpleapi"]
