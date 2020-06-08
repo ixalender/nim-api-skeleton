@@ -55,7 +55,7 @@ routes:
     
     error NotFoundException:
         resp Http404, $ %* ErrorResponse(
-            error: jester_fix_error_msg(exception.msg),
+            error: utils.jester_fix_error_msg(exception.msg),
             message: "Data's not found."
         ), CONTENT_TYPE_JSON
 

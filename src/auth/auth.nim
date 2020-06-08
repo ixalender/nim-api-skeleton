@@ -27,6 +27,8 @@ proc jwtSecret*(): string =
     secret
     
 proc jwtSecret*(newSecret: string) =
+    if newSecret.len == 0:
+        raise newException(Exception, "JWT_SECRET env variable needed.")
     secret = newSecret
 
 proc authUser*(userId: string): AuthInfo =
